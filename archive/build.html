@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Design your Agentic OS — KAPAPA.AI</title>
+<style>
+  :root{
+    --bg:#0b0e14; --card:#151a23; --line:#222a36; --txt:#e5e7eb; --muted:#9ca3af;
+    --accent:#7c3aed; --accent2:#2563eb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--txt);line-height:1.6;-webkit-font-smoothing:antialiased;padding-bottom:40px}
+  .topbar{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.9);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+  .brand{font-weight:800;letter-spacing:.5px}
+  .brand span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .brand a{color:inherit}
+  .back{color:var(--muted);font-size:.9rem;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;text-align:center;margin:34px 0 6px}
+  .sub{text-align:center;color:var(--muted);margin-bottom:30px}
+  .layout{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+  @media(max-width:820px){.layout{grid-template-columns:1fr}}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .panel h2{font-size:1.05rem;margin-bottom:16px}
+  .field{margin-bottom:18px}
+  .field label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:8px}
+  .swatches{display:flex;flex-wrap:wrap;gap:10px}
+  .sw{width:36px;height:36px;border-radius:10px;border:2px solid transparent;cursor:pointer;transition:transform .12s}
+  .sw:hover{transform:scale(1.08)}
+  .sw.active{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+  input[type=color]{width:100%;height:40px;border:1px solid var(--line);border-radius:10px;background:transparent;cursor:pointer}
+  input[type=range]{width:100%}
+  select{width:100%;background:#0b0e14;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .toggle{display:flex;align-items:center;justify-content:space-between;font-size:.9rem;color:var(--muted)}
+  .toggle input{width:42px;height:24px;appearance:none;background:var(--line);border-radius:999px;position:relative;cursor:pointer;transition:.2s}
+  .toggle input:checked{background:var(--accent)}
+  .toggle input:before{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+  .toggle input:checked:before{left:21px}
+  .cta{display:block;text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;font-weight:700;padding:12px;border-radius:10px;text-decoration:none;margin-top:8px}
+  .cta.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);margin-top:10px}
+  .namebox{width:100%;background:#0b0e14;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:6px}
+
+  /* live preview */
+  .preview{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:sticky;top:84px}
+  #os{background:var(--osbg,#0b0e14);padding:18px;min-height:420px;transition:background .25s,color .25s;color:var(--ostxt,#e5e7eb)}
+  #os .osbar{display:flex;gap:8px;align-items:center;margin-bottom:16px}
+  #os .dot{width:11px;height:11px;border-radius:50%;background:#ff5f56}
+  #os .dot:nth-child(2){background:#ffbd2e} #os .dot:nth-child(3){background:#27c93f}
+  #os .osname{font-weight:800;margin-left:10px;letter-spacing:.5px}
+  #os .rail{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  #os .chip{font-size:.78rem;padding:6px 12px;border-radius:999px;background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.4);color:inherit}
+  #os .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  #os .ocard{background:var(--card2,rgba(255,255,255,.05));border:1px solid var(--line2,rgba(255,255,255,.1));
+    border-radius:12px;padding:14px}
+  #os .ocard .t{font-weight:700;margin-bottom:6px}
+  #os .ocard .m{font-size:.8rem;opacity:.7}
+  #os .bar{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin-top:10px}
+  .hint{text-align:center;color:var(--muted);font-size:.85rem;margin-top:14px}
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:24px 0;text-align:center;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><a href="index.html">KAPA<span>PA.AI</a></div>
+  <a class="back" href="index.html">← Back to site</a>
+</div>
+
+<div class="wrap">
+  <h1>🎨 Design your Agentic OS</h1>
+  <p class="sub">Pick your look. Watch it come alive. Then claim it — we build your real one to match.</p>
+
+  <div class="layout">
+    <!-- CONTROLS -->
+    <div class="panel">
+      <h2>Your controls</h2>
+
+      <div class="field">
+        <label>Background theme</label>
+        <div class="swatches" id="swatches">
+          <div class="sw active" data-bg="#0b0e14" data-txt="#e5e7eb" style="background:#0b0e14" title="Carbon"></div>
+          <div class="sw" data-bg="#0f172a" data-txt="#e2e8f0" style="background:#0f172a" title="Midnight"></div>
+          <div class="sw" data-bg="#1a1030" data-txt="#ede9fe" style="background:#1a1030" title="Nebula"></div>
+          <div class="sw" data-bg="#08241c" data-txt="#d1fae5" style="background:#08241c" title="Forest"></div>
+          <div class="sw" data-bg="#2a0f12" data-txt="#fecaca" style="background:#2a0f12" title="Ember"></div>
+          <div class="sw" data-bg="#f8fafc" data-txt="#0f172a" style="background:#f8fafc" title="Paper"></div>
+          <div class="sw" data-bg="#fffbeb" data-txt="#78350f" style="background:#fffbeb" title="Cream"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Custom background color</label>
+        <input type="color" id="bgPick" value="#0b0e14" />
+      </div>
+
+      <div class="field">
+        <label>Accent color</label>
+        <input type="color" id="accPick" value="#7c3aed" />
+      </div>
+
+      <div class="field">
+        <label>Layout style</label>
+        <select id="layout">
+          <option value="grid">Grid (compact cards)</option>
+          <option value="list">List (rows)</option>
+          <option value="magazine">Magazine (big hero)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Corner style</label>
+        <select id="radius">
+          <option value="12px">Soft (12px)</option>
+          <option value="2px">Sharp (2px)</option>
+          <option value="24px">Pill (24px)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="toggle">Show agent activity bar
+          <input type="checkbox" id="act" checked />
+        </label>
+      </div>
+
+      <div class="field">
+        <label>Name your OS</label>
+        <input class="namebox" id="osname" value="My Agentic OS" maxlength="22" />
+      </div>
+
+      <a class="cta" href="index.html#contact">Claim this design →</a>
+      <a class="cta ghost" href="index.html">Skip — see pricing</a>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <div class="preview">
+      <div id="os">
+        <div class="osbar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="osname" id="osnameLbl">My Agentic OS</span>
+        </div>
+        <div class="rail">
+          <span class="chip">Chat</span><span class="chip">Kanban</span>
+          <span class="chip">Office</span><span class="chip">Brain</span>
+        </div>
+        <div class="cards" id="cards">
+          <div class="ocard"><div class="t">Research Agent</div><div class="m">Scanning 14 sources…</div><div class="bar"></div></div>
+          <div class="ocard"><div class="t">Build Agent</div><div class="m">Compiling dashboard v2…</div><div class="bar"></div></div>
+          <div class="ocard"><div class="t">Memory</div><div class="m">2,048 facts stored</div><div class="bar"></div></div>
+          <div class="ocard"><div class="t">Scheduler</div><div class="m">3 jobs queued</div><div class="bar"></div></div>
+        </div>
+      </div>
+      <p class="hint">This is a live preview — your real OS ships styled exactly like this.</p>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 KAPAPA.AI · Built by Luke Kapapa, AI Agent Engineer · Ndola, Zambia</footer>
+
+<script>
+  const os = document.getElementById('os');
+  const osnameLbl = document.getElementById('osnameLbl');
+  const cards = document.getElementById('cards');
+  const osnameInput = document.getElementById('osname');
+  const accPick = document.getElementById('accPick');
+  const bgPick = document.getElementById('bgPick');
+  const layout = document.getElementById('layout');
+  const radius = document.getElementById('radius');
+  const act = document.getElementById('act');
+
+  function apply(){
+    os.style.setProperty('--osbg', bgPick.value);
+    os.style.setProperty('--ostxt', document.querySelector('.sw.active') ? document.querySelector('.sw.active').dataset.txt : '#e5e7eb');
+    os.style.color = os.style.getPropertyValue('--ostxt');
+    const a = accPick.value;
+    os.style.setProperty('--accent', a);
+    // derive accent2 as a lighter blend
+    os.style.setProperty('--accent2', shade(a, 40));
+    os.style.setProperty('--card2', hexA(bgPick.value, .08));
+    os.style.setProperty('--line2', hexA(bgPick.value, .25));
+    osnameLbl.textContent = osnameInput.value || 'My Agentic OS';
+
+    // layout
+    if(layout.value==='list'){ cards.style.gridTemplateColumns='1fr'; }
+    else if(layout.value==='magazine'){ cards.style.gridTemplateColumns='1fr'; cards.querySelectorAll('.ocard').forEach(c=>c.style.padding='20px'); }
+    else { cards.style.gridTemplateColumns='1fr 1fr'; cards.querySelectorAll('.ocard').forEach(c=>c.style.padding='14px'); }
+
+    // radius
+    cards.querySelectorAll('.ocard').forEach(c=>c.style.borderRadius=radius.value);
+
+    // activity bar
+    document.querySelectorAll('#os .bar').forEach(b=>b.style.display = act.checked ? 'block':'none');
+  }
+
+  function shade(hex, amt){
+    let c = hex.replace('#','');
+    if(c.length===3) c = c.split('').map(x=>x+x).join('');
+    let r=parseInt(c.substr(0,2),16), g=parseInt(c.substr(2,2),16), b=parseInt(c.substr(4,2),16);
+    r=Math.min(255,r+amt); g=Math.min(255,g+amt); b=Math.min(255,b+amt);
+    return `rgb(${r},${g},${b})`;
+  }
+  function hexA(hex,a){
+    let c=hex.replace('#',''); if(c.length===3) c=c.split('').map(x=>x+x).join('');
+    return `rgba(${parseInt(c.substr(0,2),16)},${parseInt(c.substr(2,2),16)},${parseInt(c.substr(4,2),16)},${a})`;
+  }
+
+  // swatch clicks
+  document.querySelectorAll('.sw').forEach(sw=>{
+    sw.addEventListener('click',()=>{
+      document.querySelectorAll('.sw').forEach(s=>s.classList.remove('active'));
+      sw.classList.add('active');
+      bgPick.value = sw.dataset.bg;
+      apply();
+    });
+  });
+  [bgPick,accPick,layout,radius,act,osnameInput].forEach(el=>el.addEventListener('input',apply));
+  apply();
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KAPAPA.AI — Custom AI agents &amp; automations, built for you</title>
+<style>
+  :root{
+    --bg:#0b0e14; --card:#151a23; --line:#222a36; --txt:#e5e7eb; --muted:#9ca3af;
+    --a1:#7c3aed; --a2:#2563eb; --grad:linear-gradient(135deg,var(--a1),var(--a2));
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--txt);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  header{position:sticky;top:0;z-index:20;background:rgba(11,14,20,.85);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{font-weight:800;letter-spacing:.5px;font-size:1.15rem}
+  .brand span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nav-links{display:flex;gap:24px;font-size:.95rem;color:var(--muted)}
+  .nav-links a:hover{color:var(--txt)}
+  .btn{display:inline-block;background:var(--grad);color:#fff;font-weight:600;padding:11px 20px;
+    border-radius:10px;font-size:.95rem;transition:transform .15s ease,box-shadow .15s ease;
+    box-shadow:0 6px 20px rgba(124,58,237,.35)}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(124,58,237,.5)}
+  .btn.ghost{background:transparent;border:1px solid var(--line);box-shadow:none;color:var(--txt)}
+  .btn.ghost:hover{border-color:var(--a2);transform:translateY(-2px)}
+
+  .hero{padding:90px 0 70px;text-align:center}
+  .pill{display:inline-block;font-size:.8rem;color:var(--muted);border:1px solid var(--line);
+    padding:6px 14px;border-radius:999px;margin-bottom:22px}
+  .hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;font-weight:800;margin-bottom:18px}
+  .hero h1 b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);max-width:620px;margin:0 auto 30px;font-size:1.05rem}
+  .hero .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .trust{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;color:var(--muted);
+    font-size:.85rem;margin-top:38px}
+  .trust span{display:flex;align-items:center;gap:8px}
+
+  section{padding:70px 0}
+  .sec-head{text-align:center;margin-bottom:46px}
+  .sec-head h2{font-size:clamp(1.6rem,4vw,2.3rem);font-weight:800;margin-bottom:10px}
+  .sec-head p{color:var(--muted)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;
+    transition:border-color .2s ease,transform .2s ease}
+  .card:hover{border-color:var(--a2);transform:translateY(-3px)}
+  .card .ico{width:44px;height:44px;border-radius:12px;background:var(--grad);display:flex;
+    align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:16px}
+  .card h3{font-size:1.15rem;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:.95rem}
+
+  .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;position:relative}
+  .step:before{counter-increment:s;content:"0" counter(s);position:absolute;top:18px;right:22px;
+    font-size:2.2rem;font-weight:800;color:rgba(124,58,237,.25)}
+  .step h3{margin-bottom:8px}
+  .step p{color:var(--muted);font-size:.95rem}
+
+  .price{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;align-items:start}
+  .tier{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;
+    display:flex;flex-direction:column}
+  .tier.feat{border-color:var(--a1);box-shadow:0 0 0 1px var(--a1),0 18px 40px rgba(124,58,237,.18)}
+  .tier .tag{font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--a2);font-weight:700}
+  .tier h3{font-size:1.3rem;margin:8px 0}
+  .tier .amt{font-size:2.4rem;font-weight:800;margin:6px 0 4px}
+  .tier .amt small{font-size:1rem;color:var(--muted);font-weight:500}
+  .tier ul{list-style:none;margin:18px 0 24px;display:grid;gap:10px}
+  .tier li{color:var(--muted);font-size:.95rem;padding-left:24px;position:relative}
+  .tier li:before{content:"✓";position:absolute;left:0;color:#34d399;font-weight:800}
+  .tier .btn{text-align:center;margin-top:auto}
+
+  .banner{background:var(--grad);border-radius:20px;padding:40px;text-align:center}
+  .banner h3{font-size:1.6rem;margin-bottom:10px}
+  .banner p{color:rgba(255,255,255,.85);max-width:560px;margin:0 auto 22px}
+  .banner .btn{background:#0b0e14;color:#fff}
+
+  .faq{display:grid;gap:14px;max-width:780px;margin:0 auto}
+  .q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px}
+  .q h4{font-size:1.02rem;margin-bottom:6px}
+  .q p{color:var(--muted);font-size:.93rem}
+
+  .contact{text-align:center}
+  .contact .row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:24px}
+
+  .faq code{background:#0b0e14;border:1px solid var(--line);border-radius:6px;padding:2px 7px;
+    font-size:.86rem;color:#fbbf24;word-break:break-all}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:.85rem;text-align:center}
+
+  @media (max-width:680px){
+    .nav-links{display:none}
+    .hero{padding:60px 0 50px}
+    section{padding:54px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">KAPA<span>PA.AI</span></div>
+    <nav class="nav-links">
+      <a href="#build">What I build</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn" href="#contact">Hire me</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="pill">⚡ Built on Hermes Agent · runs on your machine</span>
+    <h1>I build <b>custom AI agents</b> &amp; automations<br/>for indie devs</h1>
+    <p>Hermes-powered agents wired into your stack and shipped working — not a template, a real build.
+       You bring the idea and the problem. I bring it to life and hand you the keys.</p>
+    <div class="cta">
+      <a class="btn" href="#contact">Hire me →</a>
+      <a class="btn ghost" href="#pricing">See pricing</a>
+    </div>
+    <div class="trust">
+      <span>🤖 Bespoke agents</span>
+      <span>📊 React + WebSocket UIs</span>
+      <span>🔒 Runs locally, your data</span>
+    </div>
+  </div>
+</section>
+
+<section id="build">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>What I build</h2>
+      <p>Real, working systems — not demos.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="ico">🤖</div>
+        <h3>Custom Agents</h3>
+        <p>Multi-tool AI agents wired to your stack: research, coding, automation, message routing.</p>
+      </div>
+      <div class="card">
+        <div class="ico">📊</div>
+        <h3>Agentic Dashboards</h3>
+        <p>Browser control surfaces (React + WebSocket) to chat, monitor, and command your agents live.</p>
+      </div>
+      <div class="card">
+        <div class="ico">🧩</div>
+        <h3>Starter Kits</h3>
+        <p>Reusable agent + UI templates so you can spin up your own system in an afternoon.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>How it works</h2>
+      <p>Three steps. You stay in control the whole way.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Talk</h3><p>We scope what you need — one call, one doc. You're the decider.</p></div>
+      <div class="step"><h3>I build</h3><p>I stand up the agents, wire the tools, and ship a working UI you can open.</p></div>
+      <div class="step"><h3>You run</h3><p>It runs on your machine. I hand over the keys + a short walkthrough.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Pricing</h2>
+      <p>Fixed tiers. No surprises.</p>
+    </div>
+    <div class="price">
+      <div class="tier">
+        <span class="tag">Starter</span>
+        <h3>Single Agent</h3>
+        <div class="amt">$49</div>
+        <ul>
+          <li>1 custom agent, wired &amp; tested</li>
+          <li>Chat UI to drive it</li>
+          <li>Setup walkthrough</li>
+        </ul>
+        <a class="btn ghost" href="#contact">Choose Starter</a>
+      </div>
+      <div class="tier feat">
+        <span class="tag">Most popular</span>
+        <h3>Pro System</h3>
+        <div class="amt">$149</div>
+        <ul>
+          <li>Multi-agent team + orchestration</li>
+          <li>Live dashboard (React + WS)</li>
+          <li>Memory + tool integrations</li>
+          <li>2 weeks support</li>
+        </ul>
+        <a class="btn" href="#contact">Choose Pro</a>
+      </div>
+      <div class="tier">
+        <span class="tag">Custom</span>
+        <h3>Your Vision</h3>
+        <div class="amt">Quote</div>
+        <ul>
+          <li>Bespoke agentic system</li>
+          <li>Workflow automation</li>
+          <li>Ongoing partnership</li>
+        </ul>
+        <a class="btn ghost" href="#contact">Let's talk</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="kit" style="padding-top:0">
+  <div class="wrap">
+    <div class="banner">
+      <h3>🧩 Want to DIY? Agentic OS Starter Kit — $29</h3>
+      <p>Prefer to build it yourself? Grab the starter kit — reusable agent + UI templates and a
+         ready-to-run dashboard. Or design your own look first.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px">
+        <a class="btn" href="AgenticOS-StarterKit.zip" download>⬇️ Get the kit ($29)</a>
+        <a class="btn ghost" href="build.html">🎨 Design your own →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>FAQ</h2>
+    </div>
+    <div class="faq">
+      <div class="q"><h4>How do I pay you?</h4>
+        <p>I work with <b>international clients</b> and take payment two ways:<br/>
+           <b>1 · Crypto (preferred):</b> USDT on the <b>TRC-20 (Tron)</b> network to
+           <code>TBn1Y5ZmSGBdZnJD5HMg2mo8WL3QDh2zzN</code>.<br/>
+           <b>2 · Remittance:</b> no crypto? Send via <b>WorldRemit</b> or <b>Remitly</b>
+           to my mobile-money — I'll give you the details on request.<br/>
+           I confirm receipt before we start. Work begins on payment.</p></div>
+      <div class="q"><h4>Where does it run?</h4>
+        <p>On your own machine — your code, your data, your keys. Nothing leaves your control.</p></div>
+      <div class="q"><h4>How long does a build take?</h4>
+        <p>Starter: ~2–3 days. Pro: ~1 week. Custom: scoped together.</p></div>
+      <div class="q"><h4>Do you teach me to run it?</h4>
+        <p>Yes — every tier includes a handover walkthrough so you're never stuck.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Let's build it</h2>
+      <p>Tell me what you want automated. I'll scope it free.</p>
+    </div>
+    <div class="row">
+      <a class="btn" href="mailto:Kapapaluckson75@gmail.com">✉️ Kapapaluckson75@gmail.com</a>
+      <a class="btn ghost" href="https://t.me/LukemzI">💬 Telegram: @LukemzI</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">© 2026 KAPAPA.AI — built by Luke Kapapa, AI Agent Engineer · Ndola, Zambia</div>
+</footer>
+
+</body>
+</html>
