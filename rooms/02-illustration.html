@@ -6,7 +6,7 @@
     • the .lead-cards grid (what's in this room)
     • the .gallery grid (the actual listings — start empty, fill as you ship)
     • the breadcrumb back link
-  Keep the <head>, the ambiance elements, and the three <script> tags untouched
+  Keep the <head>, the ambiance elements, and the script tags untouched
   so every room shares Yori's House look. Styling lives in assets/css/main.css.
 -->
 <html lang="en" data-view="desktop">
@@ -22,19 +22,7 @@
 <link href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/300.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/400.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/500.css" rel="stylesheet">
-<script>
-  (function () {
-    try {
-      var mq = window.matchMedia('(max-width: 860px)').matches;
-      var touch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-      document.documentElement.setAttribute('data-view', (mq || touch) ? 'mobile' : 'desktop');
-      window.__yoriDetected = (mq || touch) ? 'mobile' : 'desktop';
-    } catch (e) {
-      document.documentElement.setAttribute('data-view', 'desktop');
-      window.__yoriDetected = 'desktop';
-    }
-  })();
-</script>
+<script src="../assets/js/view-detect.js"></script>
 <link rel="stylesheet" href="../assets/css/main.css" />
 </head>
 <body>
