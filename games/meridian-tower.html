@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MERIDIAN TOWER — Live Office Facility</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/fontsource/css/archivo-black@latest/index.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/css/ibm-plex-mono:wght@400;500;600;700@latest/index.css" rel="stylesheet">
+<link rel="stylesheet" href="meridian-tower.css">
+</head>
+<body>
+
+<div id="hud">
+  <div id="topbar">
+    <div class="panel" id="brandPanel">
+      <div class="brand-row"><span class="live-dot"></span><span>LIVE FACILITY FEED</span><span style="margin-left:auto" id="fps">-- FPS</span></div>
+      <h1>MERIDIAN <span>TOWER</span></h1>
+      <div class="data-row">
+        <div><label>LOCAL TIME</label><strong id="clock">09:00</strong></div>
+        <div><label>POSITION</label><strong id="floorLbl">PLAZA</strong></div>
+        <div><label>MODE</label><strong id="modeLbl">FLY</strong></div>
+      </div>
+    </div>
+    <div class="panel" id="mapPanel">
+      <div class="panel-head"><span>OCCUPANCY GRID</span><strong id="occ">--</strong></div>
+      <canvas id="minimap" width="188" height="124"></canvas>
+      <div class="legend">
+        <span><i style="background:#58b6ff"></i>WORKING</span>
+        <span><i style="background:#ffd166"></i>MOVING</span>
+        <span><i style="background:#ff7a1a"></i>COURIER</span>
+        <span><i style="background:#7fae8f"></i>OUTSIDE</span>
+      </div>
+    </div>
+  </div>
+  <div id="crosshair"></div>
+  <div id="bottombar">
+    <div class="panel" id="keysPanel">
+      <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move &nbsp; <kbd>MOUSE</kbd> look &nbsp; <kbd>SHIFT</kbd> boost</div>
+      <div><kbd>SPACE</kbd>/<kbd>C</kbd> up·down &nbsp; <kbd>F</kbd> walk/fly &nbsp; <kbd>1</kbd>–<kbd>4</kbd> floors &nbsp; <kbd>R</kbd> reset</div>
+    </div>
+    <div class="panel" id="ctrlPanel">
+      <div><label>DAY CYCLE <span id="timeVal" style="color:var(--acc2)">09:00</span></label>
+        <input type="range" id="timeSlider" min="0" max="24" step="0.1" value="9"></div>
+      <div><label>SIM SPEED</label><button class="btn" id="speedBtn">×1</button></div>
+      <div><label>CAMERA</label><button class="btn" id="modeBtn">FLY MODE</button></div>
+      <div><label>VIEW</label><button class="btn" id="resetBtn">RESET</button></div>
+    </div>
+  </div>
+  <div id="toast"></div>
+</div>
+
+<div class="overlay" id="startOverlay">
+  <div class="dossier">
+    <div class="dos-head"><span>FACILITY 07 · SECTOR NORTH · CAM-01</span><span class="live">● LIVE SIGNAL</span></div>
+    <div class="dos-body">
+      <div class="dos-kicker">// REAL-TIME BUILDING SIMULATION</div>
+      <h2 class="dos-title">MERIDIAN<br>TOWER <em>LIVE</em></h2>
+      <p class="dos-sub">A three-storey glass office building running in real time — 28 occupants commuting between desks,
+        coolers and the elevator, traffic circling the block, and a full 24-hour daylight cycle. You have free roam: fly through the curtain wall or walk the floors.</p>
+      <div class="spec-grid">
+        <div><label>FLOORS</label><strong>3 + ROOF</strong></div>
+        <div><label>OCCUPANTS</label><strong class="o">28 LIVE</strong></div>
+        <div><label>ELEVATOR</label><strong class="t">1 · ACTIVE</strong></div>
+        <div><label>DAY CYCLE</label><strong>24 H</strong></div>
+      </div>
+      <div class="ctrl-cols">
+        <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move · <kbd>MOUSE</kbd> look</div>
+        <div><kbd>SHIFT</kbd> boost · <kbd>SPACE</kbd>/<kbd>C</kbd> rise / sink</div>
+        <div><kbd>F</kbd> toggle walk / fly · <kbd>R</kbd> reset view</div>
+        <div><kbd>1</kbd>–<kbd>4</kbd> jump to floor · <kbd>ESC</kbd> release cursor</div>
+      </div>
+      <button id="enterBtn">ENTER THE BUILDING →</button>
+      <div class="dos-foot">WEBGL · THREE.JS · POINTER LOCK · PROCEDURAL CITY</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="pauseOverlay">
+  <div class="panel pause-card">
+    <h3>SIMULATION PAUSED</h3>
+    <p>CLICK ANYWHERE TO RESUME FREE ROAM</p>
+  </div>
+</div>
+
+<div id="fallback">WEBGL UNAVAILABLE — THIS FACILITY REQUIRES A GPU-ENABLED BROWSER.</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+
+<script type="module" src="meridian-tower.js"></script>
+</body>
+</html>
