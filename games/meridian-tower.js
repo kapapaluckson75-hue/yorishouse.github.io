@@ -312,8 +312,9 @@ function buildCar(color){
 }
 const mover=buildCar(0xc05a3a);
 /* parked cars face the traffic flow of their side: left edge flows -Z, right edge flows +Z */
+const cars = [];
 [[-41.2,10,Math.PI,0x3e6fb0],[-41.2,-8,Math.PI,0x8a8f96],[41.2,4,0,0x4a6a52]].forEach(c=>{
-  const p=buildCar(c[3]); p.position.set(c[0],0,c[1]); p.rotation.y=c[2]; });
+  const p=buildCar(c[3]); p.position.set(c[0],0,c[1]); p.rotation.y=c[2]; cars.push(p); });
 
 /* ============================== BUILDING ============================== */
 const BW=26,BD=16,FH=3.6,FLOORS=[0,3.6,7.2],ROOF=10.8;
@@ -772,6 +773,180 @@ const player={ pos:new THREE.Vector3(30,16,34), yaw:0.72, pitch:-0.22, vy:0, wal
 const keys={};
 let locked=false, dragLook=false, dragging=false, lastMX=0,lastMY=0, started=false;
 const canvas=renderer.domElement;
+
+/* ============================== COLLISION SYSTEM ============================== */
+const PLAYER_RADIUS = 0.35;
+const PLAYER_HEIGHT = 1.68;
+const STEP_HEIGHT = 0.3;
+
+// Building boundary walls (axis-aligned boxes: [xMin, xMax, zMin, zMax, yMin, yMax])
+const wallColliders = [];
+const deskColliders = [];
+const workerColliders = [];
+const carColliders = [];
+const elevatorCollider = [];
+
+// Building exterior walls
+wallColliders.push({xMin:-13.4, xMax:13.4, zMin:-8.4, zMax:8.4, yMin:0, yMax:10.8, type:'wall'});
+// Core structures
+wallColliders.push({xMin:-12.4, xMax:-9.4, zMin:-7.5, zMax:-2.5, yMin:0, yMax:10.8, type:'wall'}); // stair core
+wallColliders.push({xMin:-11.65, xMax:-9.35, zMin:-1.15, zMax:1.15, yMin:0, yMax:11.1, type:'wall'}); // elevator shaft glass
+
+// Interior columns (cylinders approximated as boxes for simplicity)
+const colPositions = [-12.6,-8.4,-4.2,0,4.2,8.4,12.6];
+colPositions.forEach(x => {
+  [[7.7], [-7.7]].forEach(z => {
+    wallColliders.push({xMin:x-0.2, xMax:x+0.2, zMin:z-0.2, zMax:z+0.2, yMin:0, yMax:10.8, type:'column'});
+  });
+});
+
+// Elevator car collider (updated dynamically)
+elevatorCollider.push({xMin:-11.575, xMax:-9.425, zMin:-1.075, zMax:1.075, yMin:0, yMax:2.5, type:'elevator'});
+
+function updateElevatorCollider() {
+  if (elevatorCollider.length > 0) {
+    elevatorCollider[0].yMin = elevCar.position.y;
+    elevatorCollider[0].yMax = elevCar.position.y + 2.5;
+  }
+}
+
+function addDeskCollider(desk) {
+  const w = 1.5, d = 0.72, h = 0.75;
+  const c = Math.cos(desk.ry), s = Math.sin(desk.ry);
+  // Approximate desk as axis-aligned box (conservative collision)
+  const halfDiag = Math.sqrt((w/2)**2 + (d/2)**2);
+  deskColliders.push({
+    x: desk.x, z: desk.z, radius: halfDiag, 
+    yMin: desk.floor, yMax: desk.floor + h,
+    width: w, depth: d, ry: desk.ry,
+    type: 'desk'
+  });
+}
+
+desks.forEach(addDeskCollider);
+
+function checkBoxCollision(x, z, y, collider) {
+  return x + PLAYER_RADIUS > collider.xMin && 
+         x - PLAYER_RADIUS < collider.xMax &&
+         z + PLAYER_RADIUS > collider.zMin && 
+         z - PLAYER_RADIUS < collider.zMax &&
+         y < collider.yMax && y + PLAYER_HEIGHT > collider.yMin;
+}
+
+function checkCylinderCollision(x, z, y, collider) {
+  const dx = x - collider.x;
+  const dz = z - collider.z;
+  const dist = Math.sqrt(dx*dx + dz*dz);
+  return dist < collider.radius + PLAYER_RADIUS &&
+         y < collider.yMax && y + PLAYER_HEIGHT > collider.yMin;
+}
+
+function checkWorkerCollision(x, z, y, worker) {
+  const wx = worker.g.position.x;
+  const wz = worker.g.position.z;
+  const wy = worker.baseY();
+  const dx = x - wx;
+  const dz = z - wz;
+  const dist = Math.sqrt(dx*dx + dz*dz);
+  // Workers are about 0.4 radius, standing on their floor
+  return dist < 0.4 + PLAYER_RADIUS &&
+         y < wy + 1.8 && y + PLAYER_HEIGHT > wy;
+}
+
+function checkCarCollision(x, z, y, car) {
+  const cx = car.g.position.x;
+  const cz = car.g.position.z;
+  const carW = 1.8, carD = 4.2, carH = 1.4;
+  return x + PLAYER_RADIUS > cx - carW/2 && 
+         x - PLAYER_RADIUS < cx + carW/2 &&
+         z + PLAYER_RADIUS > cz - carD/2 && 
+         z - PLAYER_RADIUS < cz + carD/2 &&
+         y < carH && y + PLAYER_HEIGHT > 0;
+}
+
+function resolveHorizontalCollision(newX, newZ, y) {
+  let x = newX, z = newZ;
+  
+  // Check building exterior walls
+  for (const w of wallColliders) {
+    if (checkBoxCollision(x, z, y, w)) {
+      // Determine which axis to push out on
+      const overlapX = Math.min(Math.abs(x - w.xMin), Math.abs(x - w.xMax));
+      const overlapZ = Math.min(Math.abs(z - w.zMin), Math.abs(z - w.zMax));
+      
+      if (overlapX < overlapZ) {
+        x = x < 0 ? w.xMin - PLAYER_RADIUS : w.xMax + PLAYER_RADIUS;
+      } else {
+        z = z < 0 ? w.zMin - PLAYER_RADIUS : w.zMax + PLAYER_RADIUS;
+      }
+    }
+  }
+  
+  // Check desk collisions
+  for (const d of deskColliders) {
+    if (checkCylinderCollision(x, z, y, d)) {
+      const dx = x - d.x;
+      const dz = z - d.z;
+      const dist = Math.sqrt(dx*dx + dz*dz);
+      if (dist > 0.001) {
+        const pushOut = d.radius + PLAYER_RADIUS - dist;
+        x += (dx / dist) * pushOut;
+        z += (dz / dist) * pushOut;
+      }
+    }
+  }
+  
+  // Check elevator
+  updateElevatorCollider();
+  for (const e of elevatorCollider) {
+    if (checkBoxCollision(x, z, y, e)) {
+      const overlapX = Math.min(Math.abs(x - e.xMin), Math.abs(x - e.xMax));
+      const overlapZ = Math.min(Math.abs(z - e.zMin), Math.abs(z - e.zMax));
+      
+      if (overlapX < overlapZ) {
+        x = x < 0 ? e.xMin - PLAYER_RADIUS : e.xMax + PLAYER_RADIUS;
+      } else {
+        z = z < 0 ? e.zMin - PLAYER_RADIUS : e.zMax + PLAYER_RADIUS;
+      }
+    }
+  }
+  
+  // Check workers
+  for (const w of workers) {
+    if (checkWorkerCollision(x, z, y, w)) {
+      const wx = w.g.position.x;
+      const wz = w.g.position.z;
+      const dx = x - wx;
+      const dz = z - wz;
+      const dist = Math.sqrt(dx*dx + dz*dz);
+      if (dist > 0.001) {
+        const pushOut = 0.4 + PLAYER_RADIUS - dist;
+        x += (dx / dist) * pushOut;
+        z += (dz / dist) * pushOut;
+      }
+    }
+  }
+  
+  // Check parked cars
+  for (const c of cars) {
+    if (checkCarCollision(x, z, y, c)) {
+      const cx = c.g.position.x;
+      const cz = c.g.position.z;
+      const carW = 1.8, carD = 4.2;
+      const overlapX = Math.min(Math.abs(x - (cx - carW/2)), Math.abs(x - (cx + carW/2)));
+      const overlapZ = Math.min(Math.abs(z - (cz - carD/2)), Math.abs(z - (cz + carD/2)));
+      
+      if (overlapX < overlapZ) {
+        x = x < cx ? cx - carW/2 - PLAYER_RADIUS : cx + carW/2 + PLAYER_RADIUS;
+      } else {
+        z = z < cz ? cz - carD/2 - PLAYER_RADIUS : cz + carD/2 + PLAYER_RADIUS;
+      }
+    }
+  }
+  
+  return { x, z };
+}
+
 function supportHeight(x,y,z){
   let cands=[0];
   if(Math.abs(x)<13.4 && Math.abs(z)<8.4) cands=[0,3.6,7.2,10.8];
@@ -836,8 +1011,21 @@ function playerUpdate(dt){
   /* camera looks down local -Z => world forward = (-sin yaw, -cos yaw); right = (cos yaw, -sin yaw) */
   const fwdX=-sy, fwdZ=-cy, rightX=cy, rightZ=-sy;
   const vx=(fwdX*fz+rightX*fx)*sp, vz=(fwdZ*fz+rightZ*fx)*sp;
-  player.pos.x+=vx*dt; player.pos.z+=vz*dt;
-  player.pos.x=clamp(player.pos.x,-280,280); player.pos.z=clamp(player.pos.z,-280,280);
+  
+  // Calculate tentative new position
+  let newX = player.pos.x + vx*dt;
+  let newZ = player.pos.z + vz*dt;
+  
+  // Apply collision resolution for horizontal movement
+  if (player.walk) {
+    const resolved = resolveHorizontalCollision(newX, newZ, player.pos.y);
+    newX = resolved.x;
+    newZ = resolved.z;
+  }
+  
+  player.pos.x = clamp(newX, -280, 280);
+  player.pos.z = clamp(newZ, -280, 280);
+  
   if(player.walk){
     player.vy-=22*dt; player.pos.y+=player.vy*dt;
     const sup=supportHeight(player.pos.x,player.pos.y,player.pos.z)+1.68;
