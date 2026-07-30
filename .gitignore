@@ -1,4 +1,5 @@
-```
+# Examples
+# Project with artifacts:
 # Compiled and build artifacts
 *.pyc
 __pycache__/
@@ -10,54 +11,36 @@ __pycache__/
 *.so
 *.a
 *.out
-
 # Dependencies
-node_modules/
-venv/
 .venv/
-.env
-.env.local
-*.env.*
-
-# Build directories
+venv/
+node_modules/
+.mypy_cache/
+.pytest_cache/
 dist/
 build/
 target/
 .gradle/
-
-# Python specific
-*.pyc
-__pycache__/
-*.pyo
-*.pyd
-.Python
-*.so
-.Python
-*.egg-info/
-.eggs/
-.mypy_cache/
-.pytest_cache/
-.coverage
-coverage/
-htmlcov/
-
 # Logs and temp files
 *.log
 *.tmp
 *.swp
 *.swo
-
+# Environment
+.env
+.env.local
+*.env.*
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
-
 # System files
 .DS_Store
 Thumbs.db
-
-# Compression files
+# Coverage
+coverage/
+htmlcov/
+.coverage
+# Compressed files
 *.zip
 *.gz
 *.tar
@@ -80,4 +63,3 @@ Thumbs.db
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-```
