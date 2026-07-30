@@ -870,14 +870,22 @@ function resolveHorizontalCollision(newX, newZ, y) {
   // Check building exterior walls
   for (const w of wallColliders) {
     if (checkBoxCollision(x, z, y, w)) {
-      // Determine which axis to push out on
-      const overlapX = Math.min(Math.abs(x - w.xMin), Math.abs(x - w.xMax));
-      const overlapZ = Math.min(Math.abs(z - w.zMin), Math.abs(z - w.zMax));
+      // Find the closest edge to push out from
+      const distLeft = Math.abs(x - w.xMin);
+      const distRight = Math.abs(x - w.xMax);
+      const distFront = Math.abs(z - w.zMin);
+      const distBack = Math.abs(z - w.zMax);
       
-      if (overlapX < overlapZ) {
-        x = x < 0 ? w.xMin - PLAYER_RADIUS : w.xMax + PLAYER_RADIUS;
+      const minDist = Math.min(distLeft, distRight, distFront, distBack);
+      
+      if (minDist === distLeft) {
+        x = w.xMin - PLAYER_RADIUS - 0.001;
+      } else if (minDist === distRight) {
+        x = w.xMax + PLAYER_RADIUS + 0.001;
+      } else if (minDist === distFront) {
+        z = w.zMin - PLAYER_RADIUS - 0.001;
       } else {
-        z = z < 0 ? w.zMin - PLAYER_RADIUS : w.zMax + PLAYER_RADIUS;
+        z = w.zMax + PLAYER_RADIUS + 0.001;
       }
     }
   }
@@ -900,13 +908,21 @@ function resolveHorizontalCollision(newX, newZ, y) {
   updateElevatorCollider();
   for (const e of elevatorCollider) {
     if (checkBoxCollision(x, z, y, e)) {
-      const overlapX = Math.min(Math.abs(x - e.xMin), Math.abs(x - e.xMax));
-      const overlapZ = Math.min(Math.abs(z - e.zMin), Math.abs(z - e.zMax));
+      const distLeft = Math.abs(x - e.xMin);
+      const distRight = Math.abs(x - e.xMax);
+      const distFront = Math.abs(z - e.zMin);
+      const distBack = Math.abs(z - e.zMax);
       
-      if (overlapX < overlapZ) {
-        x = x < 0 ? e.xMin - PLAYER_RADIUS : e.xMax + PLAYER_RADIUS;
+      const minDist = Math.min(distLeft, distRight, distFront, distBack);
+      
+      if (minDist === distLeft) {
+        x = e.xMin - PLAYER_RADIUS - 0.001;
+      } else if (minDist === distRight) {
+        x = e.xMax + PLAYER_RADIUS + 0.001;
+      } else if (minDist === distFront) {
+        z = e.zMin - PLAYER_RADIUS - 0.001;
       } else {
-        z = z < 0 ? e.zMin - PLAYER_RADIUS : e.zMax + PLAYER_RADIUS;
+        z = e.zMax + PLAYER_RADIUS + 0.001;
       }
     }
   }
@@ -933,13 +949,22 @@ function resolveHorizontalCollision(newX, newZ, y) {
       const cx = c.g.position.x;
       const cz = c.g.position.z;
       const carW = 1.8, carD = 4.2;
-      const overlapX = Math.min(Math.abs(x - (cx - carW/2)), Math.abs(x - (cx + carW/2)));
-      const overlapZ = Math.min(Math.abs(z - (cz - carD/2)), Math.abs(z - (cz + carD/2)));
       
-      if (overlapX < overlapZ) {
-        x = x < cx ? cx - carW/2 - PLAYER_RADIUS : cx + carW/2 + PLAYER_RADIUS;
+      const distLeft = Math.abs(x - (cx - carW/2));
+      const distRight = Math.abs(x - (cx + carW/2));
+      const distFront = Math.abs(z - (cz - carD/2));
+      const distBack = Math.abs(z - (cz + carD/2));
+      
+      const minDist = Math.min(distLeft, distRight, distFront, distBack);
+      
+      if (minDist === distLeft) {
+        x = cx - carW/2 - PLAYER_RADIUS - 0.001;
+      } else if (minDist === distRight) {
+        x = cx + carW/2 + PLAYER_RADIUS + 0.001;
+      } else if (minDist === distFront) {
+        z = cz - carD/2 - PLAYER_RADIUS - 0.001;
       } else {
-        z = z < cz ? cz - carD/2 - PLAYER_RADIUS : cz + carD/2 + PLAYER_RADIUS;
+        z = cz + carD/2 + PLAYER_RADIUS + 0.001;
       }
     }
   }
@@ -1016,9 +1041,9 @@ function playerUpdate(dt){
   let newX = player.pos.x + vx*dt;
   let newZ = player.pos.z + vz*dt;
   
-  // Apply collision resolution for horizontal movement
+  // Apply collision resolution for horizontal movement (always calculate, but only apply in WALK mode)
+  const resolved = resolveHorizontalCollision(newX, newZ, player.pos.y);
   if (player.walk) {
-    const resolved = resolveHorizontalCollision(newX, newZ, player.pos.y);
     newX = resolved.x;
     newZ = resolved.z;
   }
