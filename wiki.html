@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" data-view="desktop">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wiki — Yori's House</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/fraunces@5.0.20/400.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/fraunces@5.0.20/500.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/fraunces@5.0.20/600.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/fraunces@5.0.20/300.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/300.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/400.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.18/500.css" rel="stylesheet">
+<script src="assets/js/view-detect.js"></script>
+<link rel="stylesheet" href="assets/css/main.css" />
+<style>
+  .wiki-wrap { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+  .wiki-title { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.5rem; color: var(--fg); }
+  .wiki-section { margin-bottom: 3rem; }
+  .wiki-section h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--accent); border-bottom: 1px solid var(--line); padding-bottom: 0.5rem; }
+  .wiki-section h3 { font-size: 1.2rem; margin: 1.5rem 0 0.75rem; color: var(--fg); }
+  .wiki-section p { line-height: 1.7; color: var(--ink); margin-bottom: 1rem; }
+  .wiki-section ul { margin-bottom: 1rem; padding-left: 1.5rem; }
+  .wiki-section li { margin-bottom: 0.5rem; line-height: 1.6; }
+  .wiki-section code { background: var(--bg-subtle); padding: 0.2em 0.4em; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+  .wiki-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+  .wiki-table th, .wiki-table td { border: 1px solid var(--line); padding: 0.75rem; text-align: left; }
+  .wiki-table th { background: var(--bg-subtle); font-weight: 600; }
+  .wiki-table tr:nth-child(even) { background: var(--bg-alt); }
+  .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; margin-bottom: 2rem; padding: 0.5rem 1rem; border: 1px solid var(--line); border-radius: 8px; transition: all 0.2s; }
+  .back-link:hover { background: var(--bg-subtle); transform: translateX(-4px); }
+</style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <div class="grain"></div>
+  <div class="cursor-glow" id="cg"></div>
+  
+  <div class="shell">
+    <!-- NAV -->
+    <header class="nav">
+      <div class="wrap nav-in">
+        <a class="brand" href="index.html">
+          <span class="lamp" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/></svg>
+          </span>
+          <span style="display:flex;flex-direction:column;line-height:1">
+            <b>Yori's House</b>
+            <span>songstress of the night</span>
+          </span>
+        </a>
+
+        <nav class="nav-links">
+          <a href="index.html#rooms">rooms</a>
+          <a href="index.html#music">music</a>
+          <a href="index.html#about">about her</a>
+          <a href="index.html#buy">buy</a>
+          <a href="index.html#socials">socials</a>
+        </nav>
+
+        <div class="nav-right">
+          <div class="devtoggle" id="devtoggle" data-active="desktop" role="group" aria-label="Layout preview">
+            <span class="pill"></span>
+            <button data-set="desktop" class="on" aria-pressed="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              <span class="lbl">PC</span>
+            </button>
+            <button data-set="mobile" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg>
+              <span class="lbl">Mobile</span>
+            </button>
+          </div>
+          <button class="burger" id="burger" aria-label="Menu"><span></span></button>
+        </div>
+      </div>
+    </header>
+
+    <!-- mobile menu -->
+    <div class="mmenu" id="mmenu">
+      <a href="index.html#rooms">rooms</a>
+      <a href="index.html#music">music</a>
+      <a href="index.html#about">about her</a>
+      <a href="index.html#buy">buy</a>
+      <a href="index.html#socials">socials</a>
+    </div>
+
+    <main id="top">
+      <section class="sec">
+        <div class="wiki-wrap">
+          <a href="index.html" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Back to Home
+          </a>
+
+          <h1 class="wiki-title">📚 Yori's House — Wiki & Documentation</h1>
+
+          <div class="wiki-section">
+            <h2>🏠 Overview</h2>
+            <p><strong>Yori's House</strong> is a digital storefront and portfolio organized as an interactive house metaphor. Each "room" represents a different category of creative work — music, art, game assets, software, and more. The site features ambient visuals (starry canvas, film grain, cursor glow), responsive design with desktop/mobile toggles, and smooth micro-interactions.</p>
+          </div>
+
+          <div class="wiki-section">
+            <h2>🗺️ Site Structure</h2>
+            <ul>
+              <li><strong>Homepage (<code>index.html</code>)</strong> — Main landing page with hero section, room previews, music section, about, purchase info, and social links.</li>
+              <li><strong>Room Pages (<code>rooms/*.html</code>)</strong> — Dedicated pages for each category:
+                <ul>
+                  <li><code>01-songs.html</code> — Original Songs</li>
+                  <li><code>02-illustration.html</code> — Illustration & Anime Art</li>
+                  <li><code>03-game-assets.html</code> — Game Assets</li>
+                  <li><code>04-yori-os.html</code> — Yori OS (Software)</li>
+                  <li><code>05-everything-else.html</code> — Everything Else</li>
+                </ul>
+              </li>
+              <li><strong>Assets</strong>
+                <ul>
+                  <li><code>assets/css/main.css</code> — All styles</li>
+                  <li><code>assets/js/view-detect.js</code> — Viewport detection logic</li>
+                  <li><code>assets/js/home.js</code> — Homepage interactions</li>
+                  <li><code>assets/js/site.js</code> — Room page interactions</li>
+                  <li><code>assets/js/copy-usdt.js</code> — Copy-to-clipboard utility</li>
+                  <li><code>assets/img/</code> — Images (yori_hero.jpg, etc.)</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="wiki-section">
+            <h2>✨ Key Features</h2>
+            <h3>Visual Design</h3>
+            <ul>
+              <li>Animated starfield canvas background</li>
+              <li>Film grain overlay for texture</li>
+              <li>Dynamic cursor glow effect</li>
+              <li>Responsive typography (Fraunces + Space Grotesk)</li>
+              <li>Dark theme with accent colors per room</li>
+            </ul>
+
+            <h3>Interactions</h3>
+            <ul>
+              <li>Desktop/Mobile layout toggle (dev tool)</li>
+              <li>Hover-activated room lighting effects</li>
+              <li>Smooth scroll navigation</li>
+              <li>Collapsible mobile menu</li>
+              <li>Toast notifications for actions</li>
+              <li>USDT address copy-to-clipboard</li>
+            </ul>
+
+            <h3>Accessibility</h3>
+            <ul>
+              <li>Semantic HTML structure</li>
+              <li>ARIA labels on interactive elements</li>
+              <li>Keyboard navigation support</li>
+              <li>High contrast text</li>
+            </ul>
+          </div>
+
+          <div class="wiki-section">
+            <h2>🚪 Rooms Reference Table</h2>
+            <table class="wiki-table">
+              <thead>
+                <tr>
+                  <th>Room #</th>
+                  <th>Name</th>
+                  <th>File</th>
+                  <th>Color</th>
+                  <th>Content Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>01</td>
+                  <td>Original Songs</td>
+                  <td><code>01-songs.html</code></td>
+                  <td>#f0c27a</td>
+                  <td>Music tracks, streaming links, downloads</td>
+                </tr>
+                <tr>
+                  <td>02</td>
+                  <td>Illustration & Anime Art</td>
+                  <td><code>02-illustration.html</code></td>
+                  <td>#b69bff</td>
+                  <td>Character sheets, prints, art packs</td>
+                </tr>
+                <tr>
+                  <td>03</td>
+                  <td>Game Assets</td>
+                  <td><code>03-game-assets.html</code></td>
+                  <td>#7ce0c0</td>
+                  <td>Sprites, tiles, UI kits, tools</td>
+                </tr>
+                <tr>
+                  <td>04</td>
+                  <td>Yori OS</td>
+                  <td><code>04-yori-os.html</code></td>
+                  <td>#ff9eb5</td>
+                  <td>Software, utilities, themes</td>
+                </tr>
+                <tr>
+                  <td>05</td>
+                  <td>Everything Else</td>
+                  <td><code>05-everything-else.html</code></td>
+                  <td>#d4a7ff</td>
+                  <td>Miscellaneous items, experiments</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="wiki-section">
+            <h2>🎵 Music Section</h2>
+            <p>The music section on the homepage features:</p>
+            <ul>
+              <li>Embedded YouTube video player (custom styled)</li>
+              <li>"Now Playing" indicator with animated EQ bars</li>
+              <li>Track metadata display</li>
+              <li>Links to streaming platforms</li>
+            </ul>
+          </div>
+
+          <div class="wiki-section">
+            <h2>💰 Purchase Flow</h2>
+            <p>To purchase access or items from Yori's House:</p>
+            <ol>
+              <li>Navigate to the "Buy" section (<code>#buy</code>)</li>
+              <li>Review the pricing tiers and offerings</li>
+              <li>Click the USDT address to copy it to clipboard</li>
+              <li>Send payment via your crypto wallet</li>
+              <li>Contact via Discord with proof of payment</li>
+              <li>Receive access codes or download links</li>
+            </ol>
+            <p><strong>Supported Currency:</strong> USDT (TRC20 or ERC20)</p>
+          </div>
+
+          <div class="wiki-section">
+            <h2>🔧 Technical Details</h2>
+            <h3>Technologies Used</h3>
+            <ul>
+              <li><strong>HTML5</strong> — Semantic markup</li>
+              <li><strong>CSS3</strong> — Custom properties, flexbox/grid, animations</li>
+              <li><strong>Vanilla JavaScript</strong> — No frameworks, modular architecture</li>
+              <li><strong>Canvas API</strong> — Starfield animation</li>
+              <li><strong>Google Fonts</strong> — Fraunces (serif) + Space Grotesk (sans)</li>
+              <li><strong>Fontsource</strong> — Self-hosted font delivery via CDN</li>
+            </ul>
+
+            <h3>Browser Support</h3>
+            <ul>
+              <li>Chrome/Edge (latest)</li>
+              <li>Firefox (latest)</li>
+              <li>Safari (latest)</li>
+              <li>Mobile Safari & Chrome</li>
+            </ul>
+
+            <h3>Performance Optimizations</h3>
+            <ul>
+              <li>Preconnect to font CDN</li>
+              <li>Deferred script loading</li>
+              <li>CSS containment where applicable</li>
+              <li>Minimal DOM manipulation</li>
+              <li>No external JavaScript dependencies</li>
+            </ul>
+          </div>
+
+          <div class="wiki-section">
+            <h2>📱 Responsive Behavior</h2>
+            <p>The site adapts to different screen sizes:</p>
+            <ul>
+              <li><strong>Desktop (&gt;= 1024px)</strong> — Full navigation bar, multi-column layouts, hover effects enabled</li>
+              <li><strong>Tablet (768px - 1023px)</strong> — Compressed navigation, adjusted grid columns</li>
+              <li><strong>Mobile (&lt; 768px)</strong> — Hamburger menu, single-column layouts, touch-optimized interactions</li>
+            </ul>
+            <p>The developer toggle in the navbar allows previewing mobile/desktop layouts regardless of actual viewport size.</p>
+          </div>
+
+          <div class="wiki-section">
+            <h2>🌐 Social Links</h2>
+            <ul>
+              <li><strong>YouTube:</strong> <a href="https://www.youtube.com/@yori_mix_tube" target="_blank">@yori_mix_tube</a> — Music videos & vlogs</li>
+              <li><strong>Discord:</strong> <a href="https://discord.gg/AQS7uXerP" target="_blank">Invite Link</a> — Community hub ("the living room")</li>
+              <li><strong>itch.io:</strong> Game assets & tools storefront</li>
+              <li><strong>Twitter/X:</strong> Thoughts & works-in-progress</li>
+            </ul>
+          </div>
+
+          <div class="wiki-section">
+            <h2>📄 License Information</h2>
+            <p>Music content is governed by a separate license agreement. See <a href="LICENSE-MUSIC.md" style="color:var(--accent)">LICENSE-MUSIC.md</a> for full terms regarding usage rights, redistribution, and commercial licensing.</p>
+          </div>
+
+          <div class="wiki-section">
+            <h2>🔄 Changelog</h2>
+            <ul>
+              <li><strong>v1.0</strong> — Initial release with 5 rooms, homepage, responsive design</li>
+              <li><strong>v1.1</strong> — Added view-detect.js modularization, removed inline scripts</li>
+              <li><strong>v1.2</strong> — Wiki page created, navigation updated</li>
+            </ul>
+          </div>
+
+          <div class="wiki-section">
+            <h2>🤝 Contributing / Contact</h2>
+            <p>This is a personal project by Yori. For inquiries, collaborations, or support requests, please join the <a href="https://discord.gg/AQS7uXerP" target="_blank" style="color:var(--accent)">Discord server</a> or reach out via YouTube.</p>
+          </div>
+
+          <p style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--line);color:var(--ink-faint);text-align:center">
+            Built & organized by Yori · The lights are always on for you ✦
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        <div class="wrap foot-in">
+          <a class="brand" href="index.html">
+            <span class="lamp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/></svg></span>
+            <span style="display:flex;flex-direction:column;line-height:1"><b>Yori's House</b></span>
+          </a>
+          <span>built &amp; organized by yori · the lights are always on for you ✦</span>
+          <span style="display:flex;gap:18px;flex-wrap:wrap">
+            <a href="LICENSE-MUSIC.md" style="color:var(--ink-faint);border-bottom:1px solid var(--line-strong)">music license</a>
+            <a href="wiki.html" style="color:var(--ink-faint);border-bottom:1px solid var(--line-strong)">wiki</a>
+            <a href="https://www.youtube.com/@yori_mix_tube" target="_blank" rel="noopener" style="color:var(--ink-faint);border-bottom:1px solid var(--line-strong)">youtube</a>
+          </span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- floating return-to-auto (only when previewing a non-native layout) -->
+  <button class="autochip" id="autochip">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+    <span id="autoLabel">back to auto</span>
+  </button>
+
+  <!-- toast -->
+  <div class="toast" id="toast">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    <span id="toastMsg">layout changed</span>
+  </div>
+
+<script src="assets/js/home.js" defer></script>
+<script src="assets/js/copy-usdt.js" defer></script>
+</body>
+</html>
