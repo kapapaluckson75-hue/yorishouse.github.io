@@ -1045,9 +1045,9 @@ function playerUpdate(dt){
   let newX = player.pos.x + vx*dt;
   let newZ = player.pos.z + vz*dt;
   
-  // Apply collision resolution for horizontal movement
+  // Always calculate collision resolution but only apply in WALK mode
+  const resolved = resolveHorizontalCollision(newX, newZ, player.pos.y);
   if (player.walk) {
-    const resolved = resolveHorizontalCollision(newX, newZ, player.pos.y);
     newX = resolved.x;
     newZ = resolved.z;
   }
