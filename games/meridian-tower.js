@@ -870,11 +870,11 @@ function resolveHorizontalCollision(newX, newZ, y) {
   // Check building exterior walls
   for (const w of wallColliders) {
     if (checkBoxCollision(x, z, y, w)) {
-      // Find the closest edge to push out from
-      const distLeft = Math.abs(x - w.xMin);
-      const distRight = Math.abs(x - w.xMax);
-      const distFront = Math.abs(z - w.zMin);
-      const distBack = Math.abs(z - w.zMax);
+      // Find closest edge and push out in that direction
+      const distLeft = x - w.xMin;
+      const distRight = w.xMax - x;
+      const distFront = z - w.zMin;
+      const distBack = w.zMax - z;
       
       const minDist = Math.min(distLeft, distRight, distFront, distBack);
       
@@ -908,10 +908,10 @@ function resolveHorizontalCollision(newX, newZ, y) {
   updateElevatorCollider();
   for (const e of elevatorCollider) {
     if (checkBoxCollision(x, z, y, e)) {
-      const distLeft = Math.abs(x - e.xMin);
-      const distRight = Math.abs(x - e.xMax);
-      const distFront = Math.abs(z - e.zMin);
-      const distBack = Math.abs(z - e.zMax);
+      const distLeft = x - e.xMin;
+      const distRight = e.xMax - x;
+      const distFront = z - e.zMin;
+      const distBack = e.zMax - z;
       
       const minDist = Math.min(distLeft, distRight, distFront, distBack);
       
@@ -949,22 +949,26 @@ function resolveHorizontalCollision(newX, newZ, y) {
       const cx = c.g.position.x;
       const cz = c.g.position.z;
       const carW = 1.8, carD = 4.2;
+      const carLeft = cx - carW/2;
+      const carRight = cx + carW/2;
+      const carFront = cz - carD/2;
+      const carBack = cz + carD/2;
       
-      const distLeft = Math.abs(x - (cx - carW/2));
-      const distRight = Math.abs(x - (cx + carW/2));
-      const distFront = Math.abs(z - (cz - carD/2));
-      const distBack = Math.abs(z - (cz + carD/2));
+      const distLeft = x - carLeft;
+      const distRight = carRight - x;
+      const distFront = z - carFront;
+      const distBack = carBack - z;
       
       const minDist = Math.min(distLeft, distRight, distFront, distBack);
       
       if (minDist === distLeft) {
-        x = cx - carW/2 - PLAYER_RADIUS - 0.001;
+        x = carLeft - PLAYER_RADIUS - 0.001;
       } else if (minDist === distRight) {
-        x = cx + carW/2 + PLAYER_RADIUS + 0.001;
+        x = carRight + PLAYER_RADIUS + 0.001;
       } else if (minDist === distFront) {
-        z = cz - carD/2 - PLAYER_RADIUS - 0.001;
+        z = carFront - PLAYER_RADIUS - 0.001;
       } else {
-        z = cz + carD/2 + PLAYER_RADIUS + 0.001;
+        z = carBack + PLAYER_RADIUS + 0.001;
       }
     }
   }
@@ -1041,9 +1045,9 @@ function playerUpdate(dt){
   let newX = player.pos.x + vx*dt;
   let newZ = player.pos.z + vz*dt;
   
-  // Apply collision resolution for horizontal movement (always calculate, but only apply in WALK mode)
-  const resolved = resolveHorizontalCollision(newX, newZ, player.pos.y);
+  // Apply collision resolution for horizontal movement
   if (player.walk) {
+    const resolved = resolveHorizontalCollision(newX, newZ, player.pos.y);
     newX = resolved.x;
     newZ = resolved.z;
   }
